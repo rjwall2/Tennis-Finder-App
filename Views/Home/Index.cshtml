@@ -1,8 +1,91 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewData["Title"]</title>
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="text-center">
+        <h1 class="display-4">Welcome</h1>
+        <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    </div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <h1>Tennis Courts Near You</h1>
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let markers = [];
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: 49.2827, lng: -123.1207 },  //Vancouver, BC
+                zoom: 12
+            });
+
+            // Perform the initial fetch of places
+            updateMarkers();
+
+            // Add an event listener to update markers on bounds change
+            map.addListener('bounds_changed', updateMarkers);
+        }
+
+        function updateMarkers() {
+            let bounds = map.getBounds();
+            if (!bounds) return;
+
+            let center = bounds.getCenter();  // Get the center of the bounds
+            let northEast = bounds.getNorthEast();  // Get the northeast corner
+            let southWest = bounds.getSouthWest();  // Get the southwest corner
+
+            // Retrieve latitude and longitude values
+            let centerLat = center.lat();  // Latitude of the center
+            let centerLng = center.lng();  // Longitude of the center
+            let northEastLat = northEast.lat();  // Latitude of the northeast corner
+            let northEastLng = northEast.lng();  // Longitude of the northeast corner
+            let southWestLat = southWest.lat();  // Latitude of the southwest corner
+            let southWestLng = southWest.lng();  // Longitude of the southwest corner
+
+            // Use these values to construct your request URL
+            let requestUrl = `/api/tennismap/tenniscourts?lat=${centerLat}&lng=${centerLng}&northEastLat=${northEastLat}&northEastLng=${northEastLng}&southWestLat=${southWestLat}&southWestLng=${southWestLng}`;
+
+
+            fetch(requestUrl)
+                .then(response => response.json())
+                .then(data => {
+                    //clearMarkers();
+
+                    data.results.forEach(place => {
+                        const marker = new google.maps.Marker({
+                            position: place.geometry.location,
+                            map: map,
+                            title: place.name
+                        });
+                
+
+                        marker.addListener('click', () => {
+                            alert('You clicked on ' + place.name);
+                        });
+
+                        markers.push(marker);
+                    });
+                })
+                .catch(error => console.error('Error fetching tennis courts:', error));
+        }
+
+        function clearMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+        }
+
+    </script>
+
+    <!-- Load Google Maps script without the API key in the URL -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUmP5UYfThrtIb32E7DavYLyetcVATxzo&callback=initMap" async defer></script>
+</body>
+</html>
