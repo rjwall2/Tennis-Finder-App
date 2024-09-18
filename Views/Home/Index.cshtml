@@ -56,10 +56,13 @@
 
 
             fetch(requestUrl)
+                // Response object returned from fetch is converted to JSON
                 .then(response => response.json())
+                // Handling of JSON data returned by the promise
                 .then(data => {
                     //clearMarkers();
 
+                    // data.results returns an array of places that the API provided, thus we can use foreach on it
                     data.results.forEach(place => {
                         const marker = new google.maps.Marker({
                             position: place.geometry.location,
