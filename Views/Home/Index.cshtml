@@ -3,10 +3,77 @@
 <head>
     <title>@ViewData["Title"]</title>
     <style>
-        #map {
-            height: 500px;
+        html, body {
+            height: 100%;
             width: 100%;
         }
+        .container {
+            height: 100%; /* Full height of the viewport */
+            width: 100%; /* Full width */
+            display: flex; /* Enable Flexbox */
+            
+        }
+
+        main {
+            height: 100vh; /* Full viewport height */
+            width: 100%; /* Full width */
+        }
+
+        #main-content{
+            height: 100vh; /* Full viewport height */
+            width: 100%; /* Full width */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            transition: transform 0.3s ease; /* Smooth transition */
+        }
+
+        .shift-right {
+            transform: translateX(20%)
+        }
+
+
+        #map {
+            height: 50%; /* 50% of the container's height */
+            width: 80%; /* 50% of the container's width */
+        }
+
+        #popup {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 20%;
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 1000;
+            display: flex; /* Enable Flexbox */
+            flex-direction: column; /* Stack items vertically */
+            justify-content: flex-start; /* Align items at the start */
+            align-items: center; /* Center items horizontally */
+            overflow-y: auto; /* Allow vertical scrolling if content overflows */
+            max-width: 300px; /* Maximum width */
+
+        }
+
+        .popup.close {
+            transform: translateX(-100%);
+        }
+
+        .close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        #calendar {
+            max-width: 100%; /* Prevent it from exceeding the popup's width */
+        }
+
+
     </style>
 </head>
 <body>
@@ -15,10 +82,34 @@
         <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
     </div>
 
-    <h1>Tennis Courts Near You</h1>
-    <div id="map"></div>
+    
+    <div id="main-content">
+        <h1>Tennis Courts Near You</h1>
+        <div id="map"></div>
+    </div>
+
+    <div id="popup" class="popup close">
+        <button class="close" onclick="closePopup()">×</button>
+        <h2>Join Court</h2>
+        <button id="join-button">Join</button>
+        <div>
+            <label for="calendar">Select Date:</label>
+            <input type="date" id="calendar">
+        </div>
+        <div id="user-selections">
+            <h3>Other Users:</h3>
+            <ul id="user-list">
+                <li>User1: Available on 2024-09-25</li>
+                <li>User2: Available on 2024-09-26</li>
+            </ul>
+        </div>
+    </div>
+
 
     <script>
+        const POPUP_WIDTH_PERCENTAGE = 0.2; // 20% of the viewport
+        const POPUP_MAX_WIDTH = 300; // Max width in pixels
+
         let map;
         let markers = [];
 
@@ -72,7 +163,8 @@
                 
 
                         marker.addListener('click', () => {
-                            alert('You clicked on ' + place.name);
+                            openPopup();
+                            //alert('You clicked on ' + place.name);
                         });
 
                         markers.push(marker);
@@ -84,6 +176,36 @@
         function clearMarkers() {
             markers.forEach(marker => marker.setMap(null));
             markers = [];
+        }
+
+        function openPopup() {
+            const popup = document.getElementById("popup");
+            const mainContent = document.getElementById("main-content");
+
+            // Show the popup
+            popup.classList.remove("close");
+
+            // Check for overlap
+            let windowSize = window.innerWidth;
+            let popupWidth = windowSize * POPUP_WIDTH_PERCENTAGE;
+            const mainRect = mainContent.getBoundingClientRect();
+            const overlaps = !(popupWidth < mainRect.left || POPUP_MAX_WIDTH < mainRect.left);
+
+            // Shift main content if there is an overlap
+            if (overlaps) {
+                mainContent.classList.add("shift-right");
+            }
+        }
+
+        function closePopup() {
+            const popup = document.getElementById("popup");
+            const mainContent = document.getElementById("main-content");
+
+            // Hide the popup
+            popup.classList.add("close");
+
+            // Remove the shift from main content
+            mainContent.classList.remove("shift-right");
         }
 
     </script>
