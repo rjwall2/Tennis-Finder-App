@@ -1,0 +1,68 @@
+﻿html, body {
+    height: 100%;
+    width: 100%;
+}
+
+.container {
+    height: 100%; /* Full height of the viewport */
+    width: 100%; /* Full width */
+    display: flex; /* Enable Flexbox */
+}
+
+main {
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full width */
+}
+
+#main-content {
+    height: 100vh; /* Full viewport height */
+    width: 100%; /* Full width */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.shift-right {
+    transform: translateX(20%)
+}
+
+
+#map {
+    height: 50%; /* 50% of the container's height */
+    width: 80%; /* 50% of the container's width */
+}
+
+#popup {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 20%;
+    background-color: white;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 1000;
+    display: flex; /* Enable Flexbox */
+    flex-direction: column; /* Stack items vertically */
+    justify-content: flex-start; /* Align items at the start */
+    align-items: center; /* Center items horizontally */
+    overflow-y: auto; /* Allow vertical scrolling if content overflows */
+    max-width: 300px; /* Maximum width */
+}
+
+.popup.close {
+    transform: translateX(-100%);
+}
+
+.close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+#calendar {
+    max-width: 100%; /* Prevent it from exceeding the popup's width */
+}
